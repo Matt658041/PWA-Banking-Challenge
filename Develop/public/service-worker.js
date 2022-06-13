@@ -4,7 +4,11 @@ const CACHE_NAME = APP_PREFIX + VERSION;
 const FILES_TO_CACHE = [
   "./index.html",
   "./public/css/style.css",
-  "./assets/css/bootstrap.css",
+  "./public/css/bootstrap.css",
+  "./public/js/db.js",
+  "./public/js/index.js",
+  "./public/icons"
+  
 ];
 // Respond with cached resources
 self.addEventListener('fetch', function (e) {
