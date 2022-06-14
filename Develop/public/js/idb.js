@@ -1,9 +1,9 @@
 let db;
-const request = indexedDB.open('Banking', 1);
+const request = indexedDB.open('budget', 1);
 
 request.onupgradeneeded = function(event) {
   const db = event.target.result;
-  db.createObjectStore('new_banking', { autoIncrement: true });
+  db.createObjectStore('new_budget', { autoIncrement: true });
 };
 
 request.onsuccess = function(event) {
@@ -12,7 +12,7 @@ request.onsuccess = function(event) {
 
   // check if app is online, if yes run checkDatabase() function to send all local db data to api
   if (navigator.onLine) {
-    uploadBanking();
+    uploadBudget();
   }
 };
 
@@ -22,28 +22,28 @@ request.onerror = function(event) {
 };
 
 function saveRecord(record) {
-  const transaction = db.transaction(['new_banking'], 'readwrite');
+  const transaction = db.transaction(['new_budget'], 'readwrite');
 
-  const bankingObjectStore = transaction.objectStore('new_banking');
+  const budgetObjectStore = transaction.objectStore('new_budget');
 
   // add record to your store with add method.
-  bankingObjectStore.add(record);
+  budgetObjectStore.add(record);
 }
 
-function uploadBanking() {
+function uploadBudget() {
   // open a transaction on your pending db
-  const transaction = db.transaction(['new_banking'], 'readwrite');
+  const transaction = db.transaction(['new_budget'], 'readwrite');
 
   // access your pending object store
-  const bankingObjectStore = transaction.objectStore('new_banking');
+  const budgetObjectStore = transaction.objectStore('new_budget');
 
   // get all records from store and set to a variable
-  const getAll = bankingObjectStore.getAll();
+  const getAll = budgetObjectStore.getAll();
 
   getAll.onsuccess = function() {
     // if there was data in indexedDb's store, let's send it to the api server
     if (getAll.result.length > 0) {
-      fetch('/api/banking', {
+      fetch('/api/budget', {
         method: 'POST',
         body: JSON.stringify(getAll.result),
         headers: {
@@ -57,10 +57,10 @@ function uploadBanking() {
             throw new Error(serverResponse);
           }
 
-          const transaction = db.transaction(['new_banking'], 'readwrite');
-          const bankingObjectStore = transaction.objectStore('new_banking');
+          const transaction = db.transaction(['new_budget'], 'readwrite');
+          const budgetObjectStore = transaction.objectStore('new_budget');
           // clear all items in your store
-          bankingObjectStore.clear();
+          budgetObjectStore.clear();
         })
         .catch(err => {
           // set reference to redirect back here
@@ -71,4 +71,4 @@ function uploadBanking() {
 }
 
 // listen for app coming back online
-window.addEventListener('online', uploadBanking);
+window.addEventListener('online', uploadBudget);
